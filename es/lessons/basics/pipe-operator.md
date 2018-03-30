@@ -1,9 +1,6 @@
 ---
-layout: page
+version: 0.9.1
 title: Operador Pipe
-category: basics
-order: 7
-lang: es
 ---
 
 El operador pipe `|>` pasa el resultado de una expresión como el primer parámetro de otra expresión.
@@ -34,14 +31,14 @@ Para este grupo de ejemplos, usaremos el módulo String de elixir.
 - Separar Cadenas (Tokenize String)
 
 ```shell
-iex> "Elixir language" |> String.split
+iex> "Elixir language" |> String.split()
 ["Elixir", "language"]
 ```
 
 - Mayúsculas a todos los caracteres (Uppercase all the tokens)
 
 ```shell
-iex> "Elixir language" |> String.split |> Enum.map( &String.upcase/1 )
+iex> "Elixir language" |> String.upcase() |> String.split()
 ["ELIXIR", "LANGUAGE"]
 ```
 

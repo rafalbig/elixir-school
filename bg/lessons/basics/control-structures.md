@@ -1,9 +1,6 @@
 ---
-layout: page
+version: 0.9.1
 title: Контролни структури
-category: basics
-order: 5
-lang: bg
 ---
 
 В този урок ще разгледаме какви контролни структури са достъпни за нас в Elixir.
@@ -12,7 +9,7 @@ lang: bg
 
 ## `if` и `unless`
 
-Най-вероятно сте срещали `if/2` преди, а ако сте ползвали Ruby сте запознати с `unless/2`.  При Elixir те работят по същия начин, но са дефинирани като макроси, а не конструкции на езика; Може да намерите тяхната имплементация в [Kernel module](http://elixir-lang.org/docs/stable/elixir/#!Kernel.html).
+Най-вероятно сте срещали `if/2` преди, а ако сте ползвали Ruby сте запознати с `unless/2`.  При Elixir те работят по същия начин, но са дефинирани като макроси, а не конструкции на езика; Може да намерите тяхната имплементация в [Kernel module](https://hexdocs.pm/elixir/Kernel.html).
 
 Трябва да се отбележи, че в Elixir единствените неверни стойности са `nil` и булевото `false`.
 
@@ -157,20 +154,23 @@ iex> with {:ok, first} <- Map.fetch(user, :first),
 ```elixir
 case Repo.insert(changeset) do
   {:ok, user} ->
-    case Guardian.encode_and_sign(resource, :token, claims) do
+    case Guardian.encode_and_sign(user, :token, claims) do
       {:ok, jwt, full_claims} ->
         important_stuff(jwt, full_claims)
-      error -> error
+
+      error ->
+        error
     end
-  error -> error
+
+  error ->
+    error
 end
 ```
 
 Когато използваме `with` разполагаме с код, който е лесен за разбиране и съдържа по-малко редове:
 
 ```elixir
-with
-  {:ok, user} <- Repo.insert(changeset),
-  {:ok, jwt, full_claims} <- Guardian.encode_and_sign(user, :token),
-  do: important_stuff(jwt, full_claims)
+with {:ok, user} <- Repo.insert(changeset),
+     {:ok, jwt, full_claims} <- Guardian.encode_and_sign(user, :token, claims),
+     do: important_stuff(jwt, full_claims)
 ```

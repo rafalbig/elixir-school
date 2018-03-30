@@ -1,9 +1,6 @@
 ---
-layout: page
+version: 1.0.1
 title: Dopasowanie wzorców
-category: basics
-order: 4
-lang: pl
 ---
 
 Dopasowanie wzorców, to jeden z najmocniejszych elementów Elixira, który pozwala dopasować wartości, struktury danych, a nawet funkcje. Tę lekcję rozpoczniemy od przyjrzenia się jak używać tego mechanizmu.
@@ -12,7 +9,7 @@ Dopasowanie wzorców, to jeden z najmocniejszych elementów Elixira, który pozw
 
 ## Operator dopasowania
 
-Gotowi na niespodziankę?  W Elixirze używamy operatora `=` też jako operatora dopasowania.  Operator ten pozwala na przypisanie, a następnie dopasowanie wartości jak poniżej:
+Gotowi na niespodziankę?  W Elixirze używamy operatora `=` to w rzeczywistości operator dopasowania, który można porównać do znaku równości w algebrze. Wykorzystanie go w zapisie powoduje, że wyrażenie zostanie potraktowane jak równanie. Elixir przypisze wartości po lewej stronie wartość po prawej. Jeżeli przypisanie się powiedzie, to zostanie zwrócony jego wynik. W przypadku zostanie zwrócony błąd:
 
 ```elixir
 iex> x = 1
@@ -38,7 +35,7 @@ iex> [1, 2, 3] = list
 iex> [] = list
 ** (MatchError) no match of right hand side value: [1, 2, 3]
 
-iex> [1|tail] = list
+iex> [1 | tail] = list
 [1, 2, 3]
 iex> tail
 [2, 3]

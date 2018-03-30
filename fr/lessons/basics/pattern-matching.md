@@ -1,9 +1,6 @@
 ---
-layout: page
+version: 0.9.0
 title: Pattern Matching
-category: basics
-order: 4
-lang: fr
 ---
 
 Le Pattern matching est une partie très puissante d'Elixir, il nous permet de tester la correspondance de simples valeurs, de structures de données, et même de fonctions. Dans cette leçon nous allons voir comment on utilise le pattern matching.
@@ -12,7 +9,7 @@ Le Pattern matching est une partie très puissante d'Elixir, il nous permet de t
 
 ## L'opérateur Match
 
-En Elixir, `=` est l'opérateur de correspondance. Via l'opérateur de correspondance, nous pouvons assigner et faire correspondre des valeurs. Regardons ça:
+Êtes-vous prêt pour un peu d'inattendu ? En Elixir, `=` est l'opérateur de correspondance, comparable au signe égal dans l'algèbre. L'utiliser transforme toute l'expression en une équation, et Elixir évalue l'équivalence des éléments à gauche et à droite du signe égal. S'il y a correspondance, il retourne la valeur de l'equation. Sinon il génère une erreur. Regardons ça :
 
 ```elixir
 iex> x = 1
@@ -38,7 +35,7 @@ iex> [1, 2, 3] = list
 iex> [] = list
 ** (MatchError) no match of right hand side value: [1, 2, 3]
 
-iex> [1|tail] = list
+iex> [1 | tail] = list
 [1, 2, 3]
 iex> tail
 [2, 3]
@@ -98,4 +95,8 @@ iex> greet.("Hello", "Sean")
 "Hi Sean"
 iex> greet.("Mornin'", "Sean")
 "Mornin', Sean"
+iex> greeting
+"Hello"
 ```
+
+Notez que dans l'exemple `"Mornin'"` la re-assignation de `greeting` à `"Mornin'"` arrive seulement à l'intérieur de la fonction. En dehors de la fonction `greeting` vaut toujours `"Hello"`.

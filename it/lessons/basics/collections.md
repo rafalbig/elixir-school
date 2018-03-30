@@ -1,9 +1,6 @@
 ---
-layout: page
+version: 0.9.0
 title: Collezioni
-category: basics
-order: 2
-lang: it
 ---
 
 Liste, tuple, liste di keywords, mappe, dizionari e combinatori funzionali.
@@ -49,7 +46,7 @@ iex> ["foo", :bar, 42] -- [42, "bar"]
 ["foo", :bar]
 ```
 
-**Nota:** viene usata la [strict comparison](../basics.md#confronto) per controllare i valori.
+**Nota:** viene usata la [strict comparison](../basics#confronto) per controllare i valori.
 
 ### Head / Tail
 
@@ -65,11 +62,11 @@ iex> tl [3.14, :pie, "Apple"]
 Oltre alle funzioni menzionate in precedenza, puoi usare l'operatore _pipe_ `|`; vedremo questo operatore nelle lezioni successive:
 
 ```elixir
-iex> [h|t] = [3.14, :pie, "Apple"]
+iex> [head | tail] = [3.14, :pie, "Apple"]
 [3.14, :pie, "Apple"]
-iex> h
+iex> head
 3.14
-iex> t
+iex> tail
 [:pie, "Apple"]
 ```
 

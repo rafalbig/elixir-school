@@ -1,9 +1,6 @@
 ---
-layout: page
+version: 0.9.1
 title: OTP Concurrency
-category: advanced
-order: 5
-lang: id
 ---
 
 Kita sudah melihat abstraksi Elixir untuk konkurensi tapi terkadang kita butuh kendali lebih dan untuk itu kita beralih ke perilaku OTP yang mana Elixir dibangun di atasnya.
@@ -25,7 +22,7 @@ defmodule SimpleQueue do
   use GenServer
 
   @doc """
-  Start our queue and link it.  This is a helper method
+  Start our queue and link it.  This is a helper function
   """
   def start_link(state \\ []) do
     GenServer.start_link(__MODULE__, state, name: __MODULE__)
@@ -42,7 +39,7 @@ end
 
 Seringkali kita perlu berinteraksi dengan GenServer dengan cara yang sinkron, memanggil fungsi dan menunggu jawabannya.  Untuk menangani permintaan (request) yang sinkron kita perlu mengimplementasikan callback `GenServer.handle_call/3` yang menerima parameter: permintaan tersebut (request), PID pemanggil, dan state yang sedang ada; yang dikembalikan adalah sebuah tuple: `{:reply, response, state}`.
 
-Dengan pencocokan pola kita bisa mendefinisikan callback untuk banyak request dan state. Daftar lengkap value pengembalian (return value) yang dapat diterima bisa dilihat di dokumentasi [`GenServer.handle_call/3`](http://elixir-lang.org/docs/stable/elixir/GenServer.html#c:handle_call/3).
+Dengan pencocokan pola kita bisa mendefinisikan callback untuk banyak request dan state. Daftar lengkap value pengembalian (return value) yang dapat diterima bisa dilihat di dokumentasi [`GenServer.handle_call/3`](https://hexdocs.pm/elixir/GenServer.html#c:handle_call/3).
 
 Untuk mendemonstrasikan request yang sinkron, mari kita tambahkan kemampuan untuk menampilkan antrian kita saat ini dan untuk mengeluarkan sebuah entri:
 
@@ -60,14 +57,15 @@ defmodule SimpleQueue do
   @doc """
   GenServer.handle_call/3 callback
   """
-  def handle_call(:dequeue, _from, [value|state]) do
+  def handle_call(:dequeue, _from, [value | state]) do
     {:reply, value, state}
   end
+
   def handle_call(:dequeue, _from, []), do: {:reply, nil, []}
 
   def handle_call(:queue, _from, state), do: {:reply, state, state}
 
-  ### Client API / Helper methods
+  ### Client API / Helper functions
 
   def start_link(state \\ []) do
     GenServer.start_link(__MODULE__, state, name: __MODULE__)
@@ -76,7 +74,6 @@ defmodule SimpleQueue do
   def queue, do: GenServer.call(__MODULE__, :queue)
   def dequeue, do: GenServer.call(__MODULE__, :dequeue)
 end
-
 ```
 
 Mari memulai SimpleQueue kita dan mencoba fungsi dequeue kita yang baru:
@@ -112,9 +109,10 @@ defmodule SimpleQueue do
   @doc """
   GenServer.handle_call/3 callback
   """
-  def handle_call(:dequeue, _from, [value|state]) do
+  def handle_call(:dequeue, _from, [value | state]) do
     {:reply, value, state}
   end
+
   def handle_call(:dequeue, _from, []), do: {:reply, nil, []}
 
   def handle_call(:queue, _from, state), do: {:reply, state, state}
@@ -126,11 +124,12 @@ defmodule SimpleQueue do
     {:noreply, state ++ [value]}
   end
 
-  ### Client API / Helper methods
+  ### Client API / Helper functions
 
   def start_link(state \\ []) do
     GenServer.start_link(__MODULE__, state, name: __MODULE__)
   end
+
   def queue, do: GenServer.call(__MODULE__, :queue)
   def enqueue(value), do: GenServer.cast(__MODULE__, {:enqueue, value})
   def dequeue, do: GenServer.call(__MODULE__, :dequeue)
@@ -150,7 +149,7 @@ iex> SimpleQueue.queue
 [1, 2, 3, 20]
 ```
 
-Untuk informasi lebih lanjut kunjungi dokumentasi resmi [GenServer](http://elixir-lang.org/docs/stable/elixir/GenServer.html#content).
+Untuk informasi lebih lanjut kunjungi dokumentasi resmi [GenServer](https://hexdocs.pm/elixir/GenServer.html#content).
 
 ## GenEvent
 
@@ -167,8 +166,8 @@ defmodule LoggerHandler do
   use GenEvent
 
   def handle_event({:msg, msg}, messages) do
-    IO.puts "Logging new message: #{msg}"
-    {:ok, [msg|messages]}
+    IO.puts("Logging new message: #{msg}")
+    {:ok, [msg | messages]}
   end
 end
 
@@ -176,7 +175,7 @@ defmodule PersistenceHandler do
   use GenEvent
 
   def handle_event({:msg, msg}, state) do
-    IO.puts "Persisting log message: #{msg}"
+    IO.puts("Persisting log message: #{msg}")
 
     # Save message
 
@@ -196,8 +195,8 @@ defmodule LoggerHandler do
   use GenEvent
 
   def handle_event({:msg, msg}, messages) do
-    IO.puts "Logging new message: #{msg}"
-    {:ok, [msg|messages]}
+    IO.puts("Logging new message: #{msg}")
+    {:ok, [msg | messages]}
   end
 
   def handle_call(:messages, messages) do
@@ -225,4 +224,4 @@ iex> GenEvent.call(pid, LoggerHandler, :messages)
 ["Hello World"]
 ```
 
-Lihat dokumentasi resmi [GenEvent](http://elixir-lang.org/docs/stable/elixir/GenEvent.html#content) untuk daftar lengkap callback dan fungsionalitas GenEvent.
+Lihat dokumentasi resmi [GenEvent](https://hexdocs.pm/elixir/GenEvent.html#content) untuk daftar lengkap callback dan fungsionalitas GenEvent.

@@ -1,9 +1,6 @@
 ---
-layout: page
+version: 0.9.1
 title: Testen
-category: basics
-order: 12
-lang: de
 ---
 
 Testen ist ein wichtiger Teil der Softwareentwicklung. In dieser Lektion werden wir uns anschauen, wie man Elixir Code mit ExUnit testet und einige best practices davon kennen lernen.
@@ -86,7 +83,7 @@ In Elixir bestehen Anwendungen aus Actors/Prozessen, die sich gegenseitig Nachri
 ```elixir
 defmodule SendingProcess do
   def run(pid) do
-    send pid, :ping
+    send(pid, :ping)
   end
 end
 
@@ -94,7 +91,7 @@ defmodule TestReceive do
   use ExUnit.Case
 
   test "receives ping" do
-    SendingProcess.run(self)
+    SendingProcess.run(self())
     assert_received :ping
   end
 end
@@ -102,9 +99,9 @@ end
 
 `assert_received` wartet nicht auf Nachrichten, mit `assert_receive` kannst du einen Timeout festlegen.
 
-## capture_io und capture_log
+### capture_io und capture_log
 
-Die Ausgabe einer Anwendung aufzuzeichen ist mit `ExUnit.captureIO` möglich, ohne die Originalanwendung umzuschreiben. Gib ihr einfach nur die Funktion, die die Ausgabe generiert:
+Die Ausgabe einer Anwendung aufzuzeichen ist mit `ExUnit.CaptureIO` möglich, ohne die Originalanwendung umzuschreiben. Gib ihr einfach nur die Funktion, die die Ausgabe generiert:
 
 ```elixir
 defmodule OutputTest do
@@ -112,7 +109,7 @@ defmodule OutputTest do
   import ExUnit.CaptureIO
 
   test "outputs Hello World" do
-    assert capture_io(fn -> IO.puts "Hello World" end) == "Hello World\n"
+    assert capture_io(fn -> IO.puts("Hello World") end) == "Hello World\n"
   end
 end
 ```

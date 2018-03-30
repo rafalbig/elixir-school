@@ -1,9 +1,6 @@
 ---
-layout: page
+version: 0.9.1
 title: Interoperabilidad Erlang
-category: advanced
-order: 1
-lang: es
 ---
 
 Uno de los beneficios añadidos de Elixir al estar construido sobre Erlang VM (BEAM) es la gran cantidad de bibliotecas existentes que están disponibles para nosotros. La interoperabilidad nos permite aprovechar esas bibliotecas y la librería estándar de Erlang desde nuestro código Elixir. En esta lección vamos a ver como acceder a la funcionalidad en la librería estándar junto con los paquetes de Erlang de terceros.
@@ -20,13 +17,13 @@ Vamos a usar `:timer.tc` para medir el tiempo de ejecución de una función dada
 defmodule Example do
   def timed(fun, args) do
     {time, result} = :timer.tc(fun, args)
-    IO.puts "Time: #{time}ms"
-    IO.puts "Result: #{result}"
+    IO.puts("Time: #{time} μs")
+    IO.puts("Result: #{result}")
   end
 end
 
 iex> Example.timed(fn (n) -> (n * n) * n end, [100])
-Time: 8ms
+Time: 8 μs
 Result: 1000000
 ```
 
@@ -45,10 +42,8 @@ end
 Ahora podemos acceder a nuestra librería Erlang
 
 ```elixir
-png = :png.create(%{:size => {30, 30},
-                    :mode => {:indexed, 8},
-                    :file => file,
-                    :palette => palette})
+png =
+  :png.create(%{:size => {30, 30}, :mode => {:indexed, 8}, :file => file, :palette => palette})
 ```
 
 ## Diferencias Notables
@@ -99,16 +94,25 @@ false
 true
 ```
 
-Es importante tener en cuenta que muchas bibliotecas Erlang más antiguas podrían no soportar binarios, por lo que necesitamos convertir cadenas Elixir a lista de caracteres. Afortunadamente esto es fácil de lograr con la función `to_char_list/1`:
+Es importante tener en cuenta que muchas bibliotecas Erlang más antiguas podrían no soportar binarios, por lo que necesitamos convertir cadenas Elixir a lista de caracteres. Afortunadamente esto es fácil de lograr con la función `to_charlist/1`:
 
 ```elixir
 iex> :string.words("Hello World")
 ** (FunctionClauseError) no function clause matching in :string.strip_left/2
-    (stdlib) string.erl:380: :string.strip_left("Hello World", 32)
-    (stdlib) string.erl:378: :string.strip/3
-    (stdlib) string.erl:316: :string.words/2
 
-iex> "Hello World" |> to_char_list |> :string.words
+    The following arguments were given to :string.strip_left/2:
+
+        # 1
+        "Hello World"
+
+        # 2
+        32
+
+    (stdlib) string.erl:1661: :string.strip_left/2
+    (stdlib) string.erl:1659: :string.strip/3
+    (stdlib) string.erl:1597: :string.words/2
+
+iex> "Hello World" |> to_charlist |> :string.words
 2
 ```
 

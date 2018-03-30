@@ -1,9 +1,6 @@
 ---
-layout: page
+version: 0.9.1
 title: Funkcje
-category: basics
-order: 6
-lang: pl
 ---
 
 W Elixirze, tak jak w wielu innych językach funkcyjnych, funkcje należą do bytów podstawowych (ang. _first class citizen_). W tej lekcji poznamy rodzaje funkcji, różnice pomiędzy nimi oraz zastosowania.
@@ -84,7 +81,7 @@ Wykorzystując naszą wiedzę o dopasowaniu wzorców, stwórzmy funkcję rekuren
 ```elixir
 defmodule Length do
   def of([]), do: 0
-  def of([_|t]), do: 1 + of(t)
+  def of([_ | tail]), do: 1 + of(tail)
 end
 
 iex> Length.of []
@@ -92,6 +89,28 @@ iex> Length.of []
 iex> Length.of [1, 2, 3]
 3
 ```
+
+### Nazywanie i arność funkcji
+
+Jak już wspominaliśmy wcześniej pełna nazwa funkcji jest kombinacją jej nazwy i arności (liczby argumentów). Można to rozumieć w nastepujacy sposób:
+
+```elixir
+defmodule Greeter2 do
+  def hello(), do: "Hello, anonymous person!"   # hello/0
+  def hello(name), do: "Hello, " <> name        # hello/1
+  def hello(name1, name2), do: "Hello, #{name1} and #{name2}"
+                                                # hello/2
+end
+
+iex> Greeter2.hello()
+"Hello, anonymous person!"
+iex> Greeter2.hello("Fred")
+"Hello, Fred"
+iex> Greeter2.hello("Fred", "Jane")
+"Hello, Fred and Jane"
+```
+
+Wypisaliśmy pełne nazwy funkcji w komentarzach powyżej. Pierwsza z nie przyjmuje żadnego argumentu, zatem jest nazwana `hello/0`, druga przyjmuje jeden argument zatem nazwa to `hello/1` i tak dalej. Nie należy mylić tego z przeciążaniem funkcji w innych językach. Każda z tych funkcji jest _niezależna_ od innych. Dopasowanie wzorców, o którym przed chwilą mówiliśmy, zostanie zastosowane jedynie wtedy, gdy mamy wiele definicji funkcji o takich samych nazwach i liczbie argumentów.    
 
 ### Funkcje prywatne
 
@@ -107,7 +126,7 @@ iex> Greeter.hello("Sean")
 "Hello, Sean"
 
 iex> Greeter.phrase
-** (UndefinedFunctionError) undefined function: Greeter.phrase/0
+** (UndefinedFunctionError) function Greeter.phrase/0 is undefined or private
     Greeter.phrase()
 ```
 
@@ -126,7 +145,7 @@ defmodule Greeter do
   end
 
   def hello(name) when is_binary(name) do
-    phrase <> name
+    phrase() <> name
   end
 
   defp phrase, do: "Hello, "
@@ -142,8 +161,8 @@ Jeżeli chcemy, by argument miał wartość domyślną, to należy użyć konstr
 
 ```elixir
 defmodule Greeter do
-  def hello(name, country \\ "en") do
-    phrase(country) <> name
+  def hello(name, language_code \\ "en") do
+    phrase(language_code) <> name
   end
 
   defp phrase("en"), do: "Hello, "
@@ -164,36 +183,49 @@ Należy uważać, łącząc mechanizmy strażników i domyślnych argumentów, p
 
 ```elixir
 defmodule Greeter do
-  def hello(names, country \\ "en") when is_list(names) do
+  def hello(names, language_code \\ "en") when is_list(names) do
     names
     |> Enum.join(", ")
-    |> hello(country)
+    |> hello(language_code)
   end
 
-  def hello(name, country \\ "en") when is_binary(name) do
-    phrase(country) <> name
+  def hello(name, language_code \\ "en") when is_binary(name) do
+    phrase(language_code) <> name
   end
 
   defp phrase("en"), do: "Hello, "
   defp phrase("es"), do: "Hola, "
 end
 
-** (CompileError) def hello/2 has default values and multiple clauses, define a function head with the defaults
+** (CompileError) iex:31: definitions with multiple clauses and default values require a header. Instead of:
+
+    def foo(:first_clause, b \\ :default) do ... end
+    def foo(:second_clause, b) do ... end
+
+one should write:
+
+    def foo(a, b \\ :default)
+    def foo(:first_clause, b) do ... end
+    def foo(:second_clause, b) do ... end
+
+def hello/2 has multiple clauses and defines defaults in one or more clauses
+    iex:31: (module)
 ```
 
 Domyślne argumenty nie są preferowane przez Elixira w mechanizmach dopasowania wzorców, ponieważ mogą być mylące. By temu zaradzić, możemy dodać dodatkową funkcję:
 
 ```elixir
 defmodule Greeter do
-  def hello(names, country \\ "en")
-  def hello(names, country) when is_list(names) do
+  def hello(names, language_code \\ "en")
+
+  def hello(names, language_code) when is_list(names) do
     names
     |> Enum.join(", ")
-    |> hello(country)
+    |> hello(language_code)
   end
 
-  def hello(name, country) when is_binary(name) do
-    phrase(country) <> name
+  def hello(name, language_code) when is_binary(name) do
+    phrase(language_code) <> name
   end
 
   defp phrase("en"), do: "Hello, "

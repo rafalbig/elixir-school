@@ -1,9 +1,6 @@
 ---
-layout: page
+version: 0.9.1
 title: Fonctions
-category: basics
-order: 7
-lang: fr
 ---
 
 En Elixir, comme dans tous les langages fonctionnels, les fonctions sont des citoyens de premier ordre. Nous verrons les différents types de fonctions en
@@ -88,7 +85,7 @@ Armés de notre connaissance du pattern matching, explorons maintenant la récur
 ```elixir
 defmodule Length do
   def of([]), do: 0
-  def of([_|t]), do: 1 + of(t)
+  def of([_ | tail]), do: 1 + of(tail)
 end
 
 iex> Length.of []
@@ -111,14 +108,14 @@ iex> Greeter.hello("Sean")
 "Hello, Sean"
 
 iex> Greeter.phrase
-** (UndefinedFunctionError) undefined function: Greeter.phrase/0
+** (UndefinedFunctionError) function Greeter.phrase/0 is undefined or private
     Greeter.phrase()
 ```
 
 ### Guards
 
 Nous avons brièvement couvert les guards (prosaïquement traduit par « gardes » dans <u>Programmer en Erlang</u>, Pearson, 2010) dans la leçon sur les
-[Structures de contrôle](../control-structures.md).
+[Structures de contrôle](../control-structures).
 Nous allons à présent voir comment nous pouvons les appliquer aux fonctions.
 
 L'exemple ci-dessous contient deux fonctions avec la même signature. Nous allons nous servir des guards pour déterminer laquelle des deux utiliser, en
@@ -134,7 +131,7 @@ defmodule Greeter do
   end
 
   def hello(name) when is_binary(name) do
-    phrase <> name
+    phrase() <> name
   end
 
   defp phrase, do: "Hello, "
@@ -150,8 +147,8 @@ Si nous voulons donner une valeur par défaut pour un argument, nous utiliserons
 
 ```elixir
 defmodule Greeter do
-  def hello(name, country \\ "en") do
-    phrase(country) <> name
+  def hello(name, language_code \\ "en") do
+    phrase(language_code) <> name
   end
 
   defp phrase("en"), do: "Hello, "
@@ -172,21 +169,33 @@ Quand nous combinons nos exemples de guards avec les arguments par défaut, nous
 
 ```elixir
 defmodule Greeter do
-  def hello(names, country \\ "en") when is_list(names) do
+  def hello(names, language_code \\ "en") when is_list(names) do
     names
     |> Enum.join(", ")
-    |> hello(country)
+    |> hello(language_code)
   end
 
-  def hello(name, country \\ "en") when is_binary(name) do
-    phrase(country) <> name
+  def hello(name, language_code \\ "en") when is_binary(name) do
+    phrase(language_code) <> name
   end
 
   defp phrase("en"), do: "Hello, "
   defp phrase("es"), do: "Hola, "
 end
 
-** (CompileError) def hello/2 has default values and multiple clauses, define a function head with the defaults
+** (CompileError) iex:31: definitions with multiple clauses and default values require a header. Instead of:
+
+    def foo(:first_clause, b \\ :default) do ... end
+    def foo(:second_clause, b) do ... end
+
+one should write:
+
+    def foo(a, b \\ :default)
+    def foo(:first_clause, b) do ... end
+    def foo(:second_clause, b) do ... end
+
+def hello/2 has multiple clauses and defines defaults in one or more clauses
+    iex:31: (module)
 ```
 
 Elixir n'aime pas les arguments par défaut dans les fonctions avec plusieurs matchs, ça peut être déroutant. Pour gérer ceci, nous ajoutons une tête de fonction avec nos
@@ -194,15 +203,16 @@ arguments par défaut :
 
 ```elixir
 defmodule Greeter do
-  def hello(names, country \\ "en")
-  def hello(names, country) when is_list(names) do
+  def hello(names, language_code \\ "en")
+
+  def hello(names, language_code) when is_list(names) do
     names
     |> Enum.join(", ")
-    |> hello(country)
+    |> hello(language_code)
   end
 
-  def hello(name, country) when is_binary(name) do
-    phrase(country) <> name
+  def hello(name, language_code) when is_binary(name) do
+    phrase(language_code) <> name
   end
 
   defp phrase("en"), do: "Hello, "

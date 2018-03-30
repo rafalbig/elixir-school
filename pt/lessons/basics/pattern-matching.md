@@ -1,18 +1,15 @@
 ---
-layout: page
+version: 1.0.1
 title: Pattern Matching
-category: basics
-order: 4
-lang: pt
 ---
 
-Pattern matching é uma poderosa parte de Elixir, nos permite procurar padrões simples em valores, estruturas de dados, e até funções. Nesta lição iremos começar a ver como pattern matching é usado.
+Pattern matching é uma poderosa parte de Elixir que nos permite procurar padrões simples em valores, estruturas de dados, e até funções. Nesta lição iremos começar a ver como pattern matching é usado.
 
 {% include toc.html %}
 
 ## Operador Match
 
-Você está preparado para ficar um pouco confuso? Em Elixir, o operador `=` é na verdade o nosso operador match. Através do operador match nós podemos associar valores e após isso corresponder os mesmos, veja o exemplo:
+Você está preparado para ficar um pouco confuso? Em Elixir, o operador `=` é na verdade o nosso operador match, comparável ao sinal de igualdade da matemática. Quando usado, a expressão inteira se torna uma equação e faz com que Elixir combine os valores do lado esquerdo com os valores do lado direito da expressão. Se a comparação for bem sucedida, o valor da equação é retornado. Se não, um erro é lançado. Vejamos a seguir:
 
 ```elixir
 iex> x = 1
@@ -38,7 +35,7 @@ iex> [1, 2, 3] = list
 iex> [] = list
 ** (MatchError) no match of right hand side value: [1, 2, 3]
 
-iex> [1|tail] = list
+iex> [1 | tail] = list
 [1, 2, 3]
 iex> tail
 [2, 3]

@@ -1,9 +1,6 @@
 ---
-layout: page
+version: 0.9.1
 title: Nadzorcy OTP
-category: advanced
-order: 6
-lang: pl
 ---
 
 Nadzorcy to wyspecjalizowane procesy mające tylko jeden cel: monitorowanie innych procesów. Pozwalają oni na tworzenie aplikacji odpornych na błędy, które będą samodzielnie restartować procesy, które zawiodły. 
@@ -22,7 +19,7 @@ Zmodyfikujmy przykład `SimpleQueue` z lekcji [Współbieżność OTP](../../adv
 import Supervisor.Spec
 
 children = [
-  worker(SimpleQueue, [], [name: SimpleQueue])
+  worker(SimpleQueue, [], name: SimpleQueue)
 ]
 
 {:ok, pid} = Supervisor.start_link(children, strategy: :one_for_one)
@@ -38,6 +35,16 @@ Do zarządzania procesami potomnymi nadzorca może wykorzystać jedną z czterec
 + `:one_for_all` - Ponownie uruchamia wszystkie procesy potomne.
 + `:rest_for_one` - Uruchamia ponownie uszkodzony proces i wszystkie procesy, które zostały uruchomione po nim.
 + `:simple_one_for_one` - Najlepszy przy dynamicznym tworzeniu procesów. Specyfikacja nadzorcy pozwala na zarządzanie tylko jednym procesem potomnym, ale proces ten może być uruchomiony wiele razy. Strategia ta może być stosowana, gdy chcemy dynamicznie uruchamiać i zatrzymywać proces potomny.  
+
+### Restart procesu potomnego
+
+Restart procesu potomnego można obsłużyć na kilka sposobów:
+
++ `:permanent` – proces potomny jest zawsze restartowany,
++ `:temporary` – proces potomny nigdy nie jest restartowany,
++ `:transient` – proces potomny zostanie zrestartowany, tylko jeżeli zakończył się w wyniku awarii.
+ 
+Konfiguracja ta jest opcjonalna, a wartością domyślną jest `:permanent`. 
 
 ### Zagnieżdżanie
 
@@ -66,7 +73,7 @@ Użycie `Task.Supervisor` nie różni się od użycia innych nadzorców:
 import Supervisor.Spec
 
 children = [
-  supervisor(Task.Supervisor, [[name: ExampleApp.TaskSupervisor]]),
+  supervisor(Task.Supervisor, [[name: ExampleApp.TaskSupervisor]])
 ]
 
 {:ok, pid} = Supervisor.start_link(children, strategy: :one_for_one)

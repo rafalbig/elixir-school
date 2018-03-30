@@ -1,9 +1,6 @@
 ---
-layout: page
+version: 0.9.1
 title: Metaprogrammierung
-category: advanced
-order: 7
-lang: de
 ---
 
 Metaprogrammierung ist der Vorhang Code zu benutzen, um Code zu schreiben. In Elixir gibt uns das die Möglichkeit die Sprache zu erweitern, so dass sie unseren Anforderungen eher entspricht und dynamisch den Code zu verändern. Wir starten mit einem Blick darauf, wie Elixir unter der Haube repräsentiert wird; dann wie man es verändert und schlussendlich können wir dieses Wissen dazu nutzen, um es zu erweitern.
@@ -152,12 +149,14 @@ defmodule OurMacro do
 end
 
 require OurMacro
-quoted = quote do
-  OurMacro.unless true, do: "Hi"
-end
+
+quoted =
+  quote do
+    OurMacro.unless(true, do: "Hi")
+  end
 ```
 
-```
+```elixir
 iex> quoted |> Macro.expand_once(__ENV__) |> Macro.to_string |> IO.puts
 if(!true) do
   "Hi"
@@ -267,8 +266,8 @@ Die Zeiten sind unterschiedlich! Was ist passiert? `unquote/1` mehrmals auf dem 
 defmodule Example do
   defmacro double_puts(expr) do
     quote bind_quoted: [expr: expr] do
-      IO.puts expr
-      IO.puts expr
+      IO.puts(expr)
+      IO.puts(expr)
     end
   end
 end

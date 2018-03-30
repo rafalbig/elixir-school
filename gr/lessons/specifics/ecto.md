@@ -1,9 +1,6 @@
 ---
-layout: page
+version: 1.0.1
 title: Ecto
-category: specifics
-order: 2
-lang: gr
 ---
 
 Το Ecto είναι ένα επίσημο Elixir project το οποίο παρέχει ένα κάλυμμα βάσης δεδομένων και μια ενσωματωμένη γλώσσα ερωτημάτων.  Με το Ecto είμαστε σε θέση να δημιουργούμε μετατροπές, να ορίζουμε μοντέλα, να εισάγουμε και επεξεργαζόμαστε εγγραφές και να τις εξετάζουμε.
@@ -12,12 +9,11 @@ lang: gr
 
 ## Εγκατάσταση
 
-Για να ξεκινήσουμε πρέπει να συμπεριλάβουμε το Ecto και έναν αντάπτορα βάσης δεδομένο στο `mix.exs` του project μας.  Μπορείτε να βρείτε μια λίστα υποστηριζόμενων ανταπτόρων στον τομέα [Usage](https://github.com/elixir-lang/ecto/blob/master/README.md#usage) του Ecto README.  Για το παράδειγμά μας θα χρησιμοποιήσυμε την PostgreSQL:
+Για να ξεκινήσουμε πρέπει να συμπεριλάβουμε το Ecto και έναν αντάπτορα βάσης δεδομένων στο `mix.exs` του project μας.  Μπορείτε να βρείτε μια λίστα υποστηριζόμενων ανταπτόρων στον τομέα [Usage](https://github.com/elixir-lang/ecto/blob/master/README.md#usage) του Ecto README.  Για το παράδειγμά μας θα χρησιμοποιήσυμε την PostgreSQL:
 
 ```elixir
 defp deps do
-  [{:ecto, "~> 1.0"},
-   {:postgrex, ">= 0.0.0"}]
+  [{:ecto, "~> 2.1.4"}, {:postgrex, ">= 0.13.2"}]
 end
 ```
 
@@ -31,12 +27,11 @@ end
 
 ### Αποθετήριο
 
-Τέλος χρειάζεται να δημιουργήσουμε το αποθετήριο του project μας, το κάλυμμα της βάσης δεδομένων.  Αυτό μπορεί να γίνει μέσω της εργασίς `mix ecto.gen.repo`.  Θα καλύψουμε τις εργασίες mix του Ecto στη συνέχεια.  Το αποθετήριο μπορεί να βρεθεί στο `lib/<όνομα του project>/repo.ex`:
+Τέλος χρειάζεται να δημιουργήσουμε το αποθετήριο του project μας, το κάλυμμα της βάσης δεδομένων.  Αυτό μπορεί να γίνει μέσω της εργασίς `mix ecto.gen.repo -r ExampleApp.Repo`.  Θα καλύψουμε τις εργασίες mix του Ecto στη συνέχεια.  Το αποθετήριο μπορεί να βρεθεί στο `lib/<όνομα του project>/repo.ex`:
 
 ```elixir
 defmodule ExampleApp.Repo do
-  use Ecto.Repo,
-    otp_app: :example_app
+  use Ecto.Repo, otp_app: :example_app
 end
 ```
 
@@ -103,15 +98,15 @@ defmodule ExampleApp.Repo.Migrations.CreateUser do
 
   def change do
     create table(:users) do
-      add :username, :string, unique: true
-      add :encrypted_password, :string, null: false
-      add :email, :string
-      add :confirmed, :boolean, default: false
+      add(:username, :string, unique: true)
+      add(:encrypted_password, :string, null: false)
+      add(:email, :string)
+      add(:confirmed, :boolean, default: false)
 
       timestamps
     end
 
-    create unique_index(:users, [:username], name: :unique_usernames)
+    create(unique_index(:users, [:username], name: :unique_usernames))
   end
 end
 ```
@@ -136,12 +131,12 @@ defmodule ExampleApp.User do
   import Ecto.Changeset
 
   schema "users" do
-    field :username, :string
-    field :encrypted_password, :string
-    field :email, :string
-    field :confirmed, :boolean, default: false
-    field :password, :string, virtual: true
-    field :password_confirmation, :string, virtual: true
+    field(:username, :string)
+    field(:encrypted_password, :string)
+    field(:email, :string)
+    field(:confirmed, :boolean, default: false)
+    field(:password, :string, virtual: true)
+    field(:password_confirmation, :string, virtual: true)
 
     timestamps
   end
@@ -174,11 +169,14 @@ import Ecto.Query, only: [from: 2]
 Το Ecto παρέχει μία εξαιρετική DSL Ερωτημάτων που μας επιτρέπει να εκφράζουμε ξεκάθαρα τα ερωτήματα.  Για να βρούμε τα ονόματα χρήστη από όλους τους επιβεβαιωμένους λογαριασμούς θα μπορούσαμε να χρησιμοποιήσουμα κάτι σαν αυτό:
 
 ```elixir
-alias ExampleApp.{Repo,User}
+alias ExampleApp.{Repo, User}
 
-query = from u in User,
+query =
+  from(
+    u in User,
     where: u.confirmed == true,
     select: u.username
+  )
 
 Repo.all(query)
 ```
@@ -187,20 +185,26 @@ Repo.all(query)
 
 ### Μέτρηση
 
-Αν θέλουμε να μετρήσουμε τον αριθμό χρηστών που έχουν επιβεβαιωμένο λογαριασμού θα μπορούσαμε να χρησιμοποιήσουμε την `count/1`:
+Αν θέλουμε να μετρήσουμε τον αριθμό χρηστών που έχουν επιβεβαιωμένο λογαριασμό θα μπορούσαμε να χρησιμοποιήσουμε την `count/1`:
 
 ```elixir
-query = from u in User,
+query =
+  from(
+    u in User,
     where: u.confirmed == true,
     select: count(u.id)
+  )
 ```
 
 Υπάρχει η συνάρτηση `count/2` που μετράει τις ξεχωριστές τιμές σε μια δωσμένη εγγραφή:
 
 ```elixir
-query = from u in User,
+query =
+  from(
+    u in User,
     where: u.confirmed == true,
     select: count(u.id, :distinct)
+  )
 ```
 
 
@@ -210,9 +214,12 @@ query = from u in User,
 Για να ομαδοποιήσουμε χρήστες με βάση την κατάσταση επιβεβαίωσης μπορούμε να συμπεριλάβουμε την επιλογή `group_by`:
 
 ```elixir
-query = from u in User,
+query =
+  from(
+    u in User,
     group_by: u.confirmed,
     select: [u.confirmed, count(u.id)]
+  )
 
 Repo.all(query)
 ```
@@ -222,9 +229,12 @@ Repo.all(query)
 Η ταξινόμηση των χρηστών με βάση την ημερομηνία δημιουργίας:
 
 ```elixir
-query = from u in User,
+query =
+  from(
+    u in User,
     order_by: u.inserted_at,
     select: [u.username, u.inserted_at]
+  )
 
 Repo.all(query)
 ```
@@ -232,9 +242,12 @@ Repo.all(query)
 Για να ταξινομήσουμε κατά φθίνουσα σειρά:
 
 ```elixir
-query = from u in User,
+query =
+  from(
+    u in User,
     order_by: [desc: u.inserted_at],
     select: [u.username, u.inserted_at]
+  )
 ```
 
 ### Ενώσεις
@@ -242,9 +255,12 @@ query = from u in User,
 Υποθέτωντας ότι έχουμε ένα προφίλ συσχετισμένο με τον χρήστη μας, ας βρούμε όλα τα προφίλ επιβεβαιωμένων λογαριασμών:
 
 ```elixir
-query = from p in Profile,
-    join: u in assoc(profile, :user),
+query =
+  from(
+    p in Profile,
+    join: u in assoc(p, :user),
     where: u.confirmed == true
+  )
 ```
 
 ### Κομμάτια
@@ -252,9 +268,12 @@ query = from p in Profile,
 Μερικές φορές, όπως όταν χρειαζόμαστε συγκεκριμμένες συναρτήσεις βάσης δεδομένων, το API ερωτημάτων δεν είναι αρκετό.  Η συνάρτηση `fragment/1` υπάρχει για αυτό το σκοπό:
 
 ```elixir
-query = from u in User,
-    where: fragment("downcase(?)", u.username) == ^username
+query =
+  from(
+    u in User,
+    where: fragment("downcase(?)", u.username) == ^username,
     select: u
+  )
 ```
 
 Επιπρόσθετα παραδείγματα ερωτημάτων μπορούν να βρεθούν στην περιγραφή ενότητας [Ecto.Query.API](http://hexdocs.pm/ecto/Ecto.Query.API.html).
@@ -274,12 +293,12 @@ defmodule ExampleApp.User do
   import Comeonin.Bcrypt, only: [hashpwsalt: 1]
 
   schema "users" do
-    field :username, :string
-    field :encrypted_password, :string
-    field :email, :string
-    field :confirmed, :boolean, default: false
-    field :password, :string, virtual: true
-    field :password_confirmation, :string, virtual: true
+    field(:username, :string)
+    field(:encrypted_password, :string)
+    field(:email, :string)
+    field(:confirmed, :boolean, default: false)
+    field(:password, :string, virtual: true)
+    field(:password_confirmation, :string, virtual: true)
 
     timestamps
   end
@@ -299,10 +318,11 @@ defmodule ExampleApp.User do
   defp validate_password_confirmation(changeset) do
     case get_change(changeset, :password_confirmation) do
       nil ->
-        password_mismatch_error(changeset)
+        password_incorrect_error(changeset)
+
       confirmation ->
         password = get_field(changeset, :password)
-        if confirmation == password, do: changeset, else: password_incorrect_error(changeset)
+        if confirmation == password, do: changeset, else: password_mismatch_error(changeset)
     end
   end
 
@@ -323,13 +343,17 @@ end
 Η χρήση της `User.changeset/2` είναι αρκετά απλή:
 
 ```elixir
-alias ExampleApp.{User,Repo}
+alias ExampleApp.{User, Repo}
 
 pw = "οι κωδικοί πρέπει να είναι δύσκολοι"
-changeset = User.changeset(%User{}, %{username: "doomspork",
-                    email: "sean@seancallan.com",
-                    password: pw,
-                    password_confirmation: pw})
+
+changeset =
+  User.changeset(%User{}, %{
+    username: "doomspork",
+    email: "sean@seancallan.com",
+    password: pw,
+    password_confirmation: pw
+  })
 
 case Repo.insert(changeset) do
   {:ok, model}        -> # Επιτυχής εισαγωγή

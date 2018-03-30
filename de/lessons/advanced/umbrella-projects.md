@@ -1,9 +1,6 @@
 ---
-layout: page
+version: 0.9.1
 title: Umbrella-Projekte
-category: advanced
-order: 8
-lang: de
 ---
 
 Manchmal kann ein Projekt richtig groß werden. Das Mix build tool erlaubt uns unseren Code in mehrere Anwendungen zu teilen und unser Elixirprojekt einfacher handhabbar zu machen, wenn es größer wird.
@@ -157,7 +154,7 @@ $ tree
 
 Falls wir zurück zur Wurzel unseres Umbrella-Projekts wechseln, können wir sehen, dass wir jeden üblichen Befehl wie etwa compile aufrufen können. Da Unterprojekte auch nur normale Anwendungen sind, kannst du in ihr Verzeichnis wechseln und all die bekannten Sachen machen, die dir Mix erlaubt.
 
-```
+```bash
 $ mix compile
 
 ==> svm
@@ -187,7 +184,7 @@ Du denkst eventuell, dass der Umgang mit Anwendungen in einem Umbrella-Projekt e
 ```elixir
 defmodule Datasets do
   def hello do
-    IO.puts "Hello, I'm the datasets"
+    IO.puts("Hello, I'm the datasets")
   end
 end
 ```

@@ -1,9 +1,6 @@
 ---
-layout: page
+version: 1.0.0
 title: Kolekcje
-category: basics
-order: 2
-lang: pl
 ---
 
 Listy, krotki, listy asocjacyjne, mapy i kombinatory funkcyjne.
@@ -30,7 +27,6 @@ iex> list ++ ["Cherry"]
 [3.14, :pie, "Apple", "Cherry"]
 ```
 
-
 ### Łączenie list
 
 Do łączenia list służy operator `++/2`:
@@ -39,6 +35,8 @@ Do łączenia list służy operator `++/2`:
 iex> [1, 2] ++ [3, 4, 1]
 [1, 2, 3, 4, 1]
 ```
+
+Na marginesie należy wspomnieć o formacie nazwy użytym powyżej (`++/2`). W Elixirze, jak i w Erlangu, na którym bazuje Elixir, każda nazwa funkcji lub operatora składa się z dwóch elementów – z nazwy, tu `++` i liczby argumentów (arności, argumentowości). Arność wraz z nazwą funkcji zapisaną z użyciem slasha jest kluczową kwestią, jeżeli chcemy mówić o kodzie Elixira (jak i Erlanga). Będziemy jeszcze o tym mówić, a na chwilę obecną ułatwi nam to zrozumienie używanej notacji.   
 
 ### Usuwanie elementów
 
@@ -72,11 +70,11 @@ iex> tl [3.14, :pie, "Apple"]
 Poza wyżej wymienionymi funkcjami możemy też użyć operatora `|`; spotkamy się z nim w kolejnych lekcjach:
 
 ```elixir
-iex> [h|t] = [3.14, :pie, "Apple"]
+iex> [head | tail] = [3.14, :pie, "Apple"]
 [3.14, :pie, "Apple"]
-iex> h
+iex> head
 3.14
-iex> t
+iex> tail
 [:pie, "Apple"]
 ```
 
@@ -132,7 +130,7 @@ iex> map["hello"]
 :world
 ```
 
-Od wersji 1.2 Elixir zmienne mogą być użyte jako klucz:
+Od wersji 1.2 Elixira zmienne mogą być użyte jako klucz:
 
 ```elixir
 iex> key = "hello"
